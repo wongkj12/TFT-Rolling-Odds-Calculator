@@ -13,7 +13,14 @@ P(\text{hit Yuumi in this shop}) = P(\text{roll 2-cost})\cdot\frac{\text{number 
 $$
 
 Brute-force probability calculation is cumbersome as $\text{number of yuumis left}$, etc. should decrease as you roll. Thus, rolls can be modelled with a Markov chain:
+
 Suppose we want to find the probability of finding x yuumis after exactly 2 shops.
+
+<figure>
+<img src="markov.png">
+<figcaption align = "center"><b>Example Markov chain for 2 rolls given some number of yuumis & pool size</b></figcaption>
+</figure>
+
 Example Markov chain for 2 rolls given some number of yuumis & pool size
 We start with 0 yuumis (on the left), and after 2 shops we must be in one of the 3 states above. We can write the corresponding transition matrix:
 

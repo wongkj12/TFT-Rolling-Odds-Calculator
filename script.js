@@ -90,11 +90,11 @@ function updateGraph() {
 	chart.data.datasets = [{
 							label: 'Probability of getting at least x units',
 							data: getProbs(
-									cost.value,
-									lvl.value,
-									copies.value,
-									pool.value,
-									gold.value)[1].slice(1)
+									parseInt(cost.value),
+									parseInt(lvl.value),
+									parseInt(copies.value),
+									parseInt(pool.value),
+									parseInt(gold.value))[1].slice(1)
 						}]
 	chart.update();
 }
@@ -157,7 +157,7 @@ function getTransitionMatrix(cost, lvl, a, b){
       	newRow.push(1); // from X >= 9 to X >= 9, probability is 1
       	continue;
       }
-      const p = getTransitionProb(cost, lvl, a - i, b - i);
+      const p = getTransitionProb(cost, lvl, a + i, b + i);
       if (j == i) {
         newRow.push(1 - p);
       } else if (j == i + 1) {
@@ -173,7 +173,7 @@ function getTransitionMatrix(cost, lvl, a, b){
 
 // Probability of rolling the desired unit in one shop given this state
 function getTransitionProb(cost, lvl, a, b){
-  const howManyLeft = totalUnits[cost - 1] - a;
+  const howManyLeft = Math.max(0, totalUnits[cost - 1] - a);
   const poolSize = totalUnits[cost - 1] * distinctChamps[cost - 1] - b;
   return getCostProb(lvl, cost) * (howManyLeft / poolSize)
 }

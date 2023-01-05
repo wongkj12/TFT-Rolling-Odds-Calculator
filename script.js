@@ -153,6 +153,10 @@ function getTransitionMatrix(cost, lvl, a, b){
   for (let i = 0; i < 10; i++) {
     const newRow = [];
     for (let j = 0; j < 10; j++) {
+      if (i == 9 && j == 9) {
+      	newRow.push(1); // from X >= 9 to X >= 9, probability is 1
+      	continue;
+      }
       const p = getTransitionProb(cost, lvl, a - i, b - i);
       if (j == i) {
         newRow.push(1 - p);

@@ -3,6 +3,8 @@ A calculator that provides the odds of hitting your units in TFT, made with very
 
 Visit [here](https://wongkj12.github.io/TFT-Rolling-Odds-Calculator/).
 
+**Updated as of 26/8/23**. Works as long as there are 29 1-costs, 22 2-costs, 18 3-costs, 12 4-costs, 10 5-costs in the pool, and number of distinct champions of each cost are 13, 13, 13, 12, 8 respectively.
+
 
 ### Brief explanation of the math
 In TFT, a roll gives you 5 shops.

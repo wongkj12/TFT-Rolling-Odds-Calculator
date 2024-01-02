@@ -234,8 +234,8 @@ function getAllTransitionMatrices(cost, lvl, a, b, gold){
 // Use law of total prob to combine all matrices into a final prob matrix
 function getCombOfMatrices(cost, lvl, a, b, gold){
 	const p = [];
-	for (let i = 0; i < Math.floor(gold/2)){
-		const combined = multiplyScalar(getAllTransitionMatrices(cost, lvl, a, b, gold)[i], getHeadlinerWhichShopProbs(cost, lvl)[i];
+	for (let i = 0; i < Math.floor(gold/2); i++){
+		const combined = multiplyScalar(getAllTransitionMatrices(cost, lvl, a, b, gold)[i], getHeadlinerWhichShopProbs(cost, lvl)[i]);
 		p = addMatrices(p, combined);
 	}
 	// Finally add the matrix of getting no headliner
@@ -307,3 +307,4 @@ function multiplyScalar(matrix, scalar) {
         result.push(row);
     }
     return result;
+}

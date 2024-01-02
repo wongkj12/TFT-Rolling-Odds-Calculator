@@ -118,6 +118,18 @@ const costProbs = [		  // level
   [0.01, 0.02, 0.12, 0.50, 0.35]  // 11
 ];
 
+const headlinerProbs = [
+	[0.077, 0, 0, 0, 0] // 2
+	[0.077, 0, 0, 0, 0] // 3
+	[0.062, 0.015, 0, 0, 0] // 4
+	[0.023, 0.054, 0, 0, 0] // 5
+	[0, 0.058, 0.019, 0, 0] // 6
+	[0, 0.031, 0.046, 0, 0] // 7
+	[0, 0, 0.054, 0.025, 0] // 8
+	[0, 0, 0, 0.082, 0.003] // 9
+	[0, 0, 0, 0.025, 0.088] // 10
+];
+
 function getCostProb(lvl, cost){ // 1-indexed
   return costProbs[lvl - 1][cost - 1];
 }
@@ -129,8 +141,7 @@ function getCostProb(lvl, cost){ // 1-indexed
 // b: Number of units of the same cost already out
 // gold: Amount of gold you want to roll
 function getProbs(cost, lvl, a, b, gold) {
-  var mat = getTransitionMatrix(cost, lvl, a, b);
-  mat = power(mat, 5*Math.floor(gold/2));
+  var mat = getCombOfMatrices(cost, lvl, a, b, gold)
 
   // Probabilities for exactly 0, 1, 2, ..., 9 of desired unit
   const pprob = mat[0] 
@@ -171,6 +182,71 @@ function getTransitionMatrix(cost, lvl, a, b){
   return mat;
 }
 
+// Transition matrix for shop with headliner, probs found on metatft.com
+function getHeadlinerTransitionMatrix(cost, lvl, a, b){
+	const mat = [];
+	for (let i =0; i < 10; i++) {
+		const newRow = [];
+		for (let j = 0; j < 10; j++) {
+			if (i == 9 && j == 9) {
+				newRow.push(1);
+				continue;
+			}
+			const p = headlinerProbs[lvl-2][cost-1]
+			if (j == i) {
+				newRow.push(1-p);
+			} else if (j == i + 3) {
+				newRow.push(p); 
+			} else {
+				newRow.push(0);
+			}
+		} 
+		mat.push(newRow);
+	}
+	return mat;
+}
+
+\\ Probabilities of hitting a headliner on the ith roll
+function getHeadlinerWhichShopProbs(cost, lvl, gold){
+	const prH = [];
+	for (let i = 0; i < Math.floor(gold/2); i++){
+		prH.push((headlinerProbs[lvl-2][cost-1])*(1-headlinerProbs[lvl-2][cost-1])**i);
+	}
+	
+	return prH;
+}
+
+// Final matrix after rolling for all possible rolls to find headliner
+function getAllTransitionMatrices(cost, lvl, a, b, gold){
+	const Ms = [];
+	const nM = getTransitionMatrix(cost, lvl, a, b);
+	const hM = getHeadlinerTransitionMatrix(cost, lvl, a, b);
+	for (let i = 0; i < Math.floor(gold/2); i++){
+		const M = power(nm, (i+1)*5-1); // multiply matrices normally until headliner is hit
+		M = multiply(hm, nM); // multiply for headliner transition matrix
+		const sM = power(nM, Math.floor(gold/2)-(i+1)*5); 
+		M = multiply(sM, M); // finishing multiplying with normal matrices until end of rolldown
+		Ms.push(M);
+	}
+	return Ms;
+}
+
+// Use law of total prob to combine all matrices into a final prob matrix
+function getCombOfMatrices(cost, lvl, a, b, gold){
+	const p = [];
+	for (let i = 0; i < Math.floor(gold/2)){
+		const combined = multiplyScalar(getAllTransitionMatrices(cost, lvl, a, b, gold)[i], getHeadlinerWhichShopProbs(cost, lvl)[i];
+		p = addMatrices(p, combined);
+	}
+	// Finally add the matrix of getting no headliner
+	const noHeadlinerM = power(getTransitionMatrix(cost, lvl, a, b), Math.floor(gold/2));
+	const prNoHeadliner = (1-headlinerProbs[lvl-2][cost-1])**(Math.floor(gold/2));
+	const c = multiplyScalar(noHeadlinerM, prNoHeadliner);
+	p = addMatrices(p, c);
+	return p;
+}
+
+
 // Probability of rolling the desired unit in one shop given this state
 function getTransitionProb(cost, lvl, a, b){
   const howManyLeft = Math.max(0, totalUnits[cost - 1] - a);
@@ -203,3 +279,31 @@ function power(a, n){
 	}
 	return newmat;
 }
+
+function addMatrices(matrixA, matrixB) {
+    if (matrixA.length !== matrixB.length || matrixA[0].length !== matrixB[0].length) {
+        throw new Error("Matrices must be of the same dimensions");
+    }
+
+    let result = [];
+    for (let i = 0; i < matrixA.length; i++) {
+        let row = [];
+        for (let j = 0; j < matrixA[i].length; j++) {
+            row.push(matrixA[i][j] + matrixB[i][j]);
+        }
+        result.push(row);
+    }
+    return result;
+}
+
+// matrix scalar multiplication
+function multiplyScalar(matrix, scalar) {
+    let result = [];
+    for (let i = 0; i < matrix.length; i++) {
+        let row = [];
+        for (let j = 0; j < matrix[i].length; j++) {
+            row.push(matrix[i][j] * scalar);
+        }
+        result.push(row);
+    }
+    return result;

@@ -118,6 +118,31 @@ const costProbs = [		  // level
   [0.01, 0.02, 0.12, 0.50, 0.35]  // 11
 ];
 
+const headlinerTransitionMatrix = [
+	[0, 0, 0, 1, 0, 0, 0, 0, 0, 0], // 0 units
+	[0, 0, 0, 0, 1, 0, 0, 0, 0, 0], // 1 unit
+	[0, 0, 0, 0, 0, 1, 0, 0, 0, 0], // 2 units
+	[0, 0, 0, 0, 0, 0, 1, 0, 0, 0], // 3 units
+	[0, 0, 0, 0, 0, 0, 0, 1, 0, 0], // 4 units
+	[0, 0, 0, 0, 0, 0, 0, 0, 1, 0], // 5 units
+	[0, 0, 0, 0, 0, 0, 0, 0, 0, 1], // 6 units
+	[0, 0, 0, 0, 0, 0, 0, 0, 0, 1], // 7 units
+	[0, 0, 0, 0, 0, 0, 0, 0, 0, 1], // 8 units
+	[0, 0, 0, 0, 0, 0, 0, 0, 0, 1], // 9 units
+]
+
+const headlinerProbs = [
+	[0.077, 0, 0, 0, 0], // 2
+	[0.077, 0, 0, 0, 0], // 3
+	[0.062, 0.015, 0, 0, 0], // 4
+	[0.023, 0.054, 0, 0, 0], // 5
+	[0, 0.058, 0.019, 0, 0], // 6
+	[0, 0.031, 0.046, 0, 0], // 7
+	[0, 0, 0.054, 0.025, 0], // 8
+	[0, 0, 0, 0.082, 0.003], // 9
+	[0, 0, 0, 0.025, 0.088], // 10
+];
+
 function getCostProb(lvl, cost){ // 1-indexed
   return costProbs[lvl - 1][cost - 1];
 }
@@ -129,8 +154,7 @@ function getCostProb(lvl, cost){ // 1-indexed
 // b: Number of units of the same cost already out
 // gold: Amount of gold you want to roll
 function getProbs(cost, lvl, a, b, gold) {
-  var mat = getTransitionMatrix(cost, lvl, a, b);
-  mat = power(mat, 5*Math.floor(gold/2));
+  var mat = getCombOfMatrices(cost, lvl, a, b, gold)
 
   // Probabilities for exactly 0, 1, 2, ..., 9 of desired unit
   const pprob = mat[0] 
@@ -152,12 +176,12 @@ function getTransitionMatrix(cost, lvl, a, b){
   const mat = [];
   for (let i = 0; i < 10; i++) {
     const newRow = [];
+	const p = getTransitionProb(cost, lvl, a+i, b+i);
     for (let j = 0; j < 10; j++) {
       if (i == 9 && j == 9) {
       	newRow.push(1); // from X >= 9 to X >= 9, probability is 1
       	continue;
       }
-      const p = getTransitionProb(cost, lvl, a + i, b + i);
       if (j == i) {
         newRow.push(1 - p);
       } else if (j == i + 1) {
@@ -170,6 +194,65 @@ function getTransitionMatrix(cost, lvl, a, b){
   }
   return mat;
 }
+
+// Probabilities of hitting a headliner on the ith roll, returns array
+function getHeadlinerWhichShopProbs(cost, lvl, gold){
+	const prH = [];
+	for (let i = 0; i < Math.floor(gold/2); i++){
+		prH.push((headlinerProbs[lvl-2][cost-1])*(1-headlinerProbs[lvl-2][cost-1])**i);
+	}
+	
+	return prH;
+}
+
+// Final matrix after rolling for all possible rolls to find headliner
+function getAllTransitionMatrices(cost, lvl, a, b, gold){
+	const rolls = Math.floor(gold/2);
+	const Ms = [];
+	const nM = getTransitionMatrix(cost, lvl, a, b);
+	const hM = headlinerTransitionMatrix;
+	for (let i = 0; i < rolls; i++){
+		var M = power(nM, (i+1)*5-1); // multiply matrices normally until headliner is hit
+		M = multiply(hM, nM); // multiply with headliner transition matrix 
+		const setsOfFourShops = Math.floor((rolls-(i+1))/4);
+		const remainingValidShops = (rolls-(i+1))*5-setsOfFourShops;
+		const rM = power(nM, remainingValidShops);
+		M = multiply(rM, M);
+		Ms.push(M);
+	}
+	return Ms;
+}
+
+// Use law of total prob to combine all matrices into a final prob matrix
+function getCombOfMatrices(cost, lvl, a, b, gold){
+	// initialize total probability matrix, allTransitionMatrices, and headlinerWhichShopProbs
+	var p = [
+		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	];
+	const allTransitionMatrices = getAllTransitionMatrices(cost, lvl, a, b, gold);
+	const headlinerWhichShopProbs = getHeadlinerWhichShopProbs(cost, lvl, gold);
+	// for each roll where a headliner is found multiply by chances of getting headliner in that roll, then add to p (total probability)
+	for (let i = 0; i < Math.floor(gold/2); i++){
+		const combined = multiplyScalar(allTransitionMatrices[i], headlinerWhichShopProbs[i]);
+		p = addMatrices(p, combined);
+	}
+	// Finally add the matrix of getting no headliner
+	const noHeadlinerM = power(getTransitionMatrix(cost, lvl, a, b), 5*Math.floor(gold/2));
+	const prNoHeadliner = (1-headlinerProbs[lvl-2][cost-1])**(Math.floor(gold/2));
+	const c = multiplyScalar(noHeadlinerM, prNoHeadliner);
+	p = addMatrices(p, c);
+	return p;
+}
+
 
 // Probability of rolling the desired unit in one shop given this state
 function getTransitionProb(cost, lvl, a, b){
@@ -202,4 +285,33 @@ function power(a, n){
 		newmat = multiply(newmat, a);
 	}
 	return newmat;
+}
+
+function addMatrices(matrixA, matrixB) {
+    if (matrixA.length !== matrixB.length || matrixA[0].length !== matrixB[0].length) {
+        throw new Error("Matrices must be of the same dimensions");
+    }
+
+    let result = [];
+    for (let i = 0; i < matrixA.length; i++) {
+        let row = [];
+        for (let j = 0; j < matrixA[i].length; j++) {
+            row.push(matrixA[i][j] + matrixB[i][j]);
+        }
+        result.push(row);
+    }
+    return result;
+}
+
+// matrix scalar multiplication
+function multiplyScalar(matrix, scalar) {
+    let result = [];
+    for (let i = 0; i < matrix.length; i++) {
+        let row = [];
+        for (let j = 0; j < matrix[i].length; j++) {
+            row.push(matrix[i][j] * scalar);
+        }
+        result.push(row);
+    }
+    return result;
 }

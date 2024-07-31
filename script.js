@@ -1,3 +1,8 @@
+document.getElementById("setRange").oninput = function(){
+	updateSet();
+	updateGraph();
+}
+
 document.getElementById("costRange").oninput = function(){
 	updateCost();
 	updateGraph();
@@ -20,6 +25,12 @@ document.getElementById("goldText").oninput = function(){
 	updateGraph();
 }
 
+function updateSet(){
+	var val = document.getElementById("setRange").value
+	document.getElementById("setOutput").innerHTML = val
+	updateGraph();
+}
+
 function updateCost(){
 	var val = document.getElementById("costRange").value
 	document.getElementById("costOutput").innerHTML = val
@@ -32,6 +43,7 @@ function updateLvl(){
 	updateGraph();
 }
 
+var set = document.getElementById("setRange")
 var cost = document.getElementById("costRange")
 var lvl = document.getElementById("lvlRange")
 var copies = document.getElementById("copiesText")
@@ -94,15 +106,18 @@ function updateGraph() {
 									parseInt(lvl.value),
 									parseInt(copies.value),
 									parseInt(pool.value),
-									parseInt(gold.value))[1].slice(1)
+									parseInt(gold.value),
+									parseInt(set.value))[1].slice(1)
 						}]
 	chart.update();
 }
 
 // CALCULATIONS
 
-const totalUnits = [22, 20, 17, 10, 9];
-const distinctChamps = [13, 13, 13, 12, 8];
+const totalUnitsSet11 = [22, 20, 17, 10, 9]; // Set 11 data kept for comparison purposes
+const totalUnitsSet12 = [30, 25, 18, 10, 9];
+const distinctChampsSet11 = [13, 13, 13, 12, 8];
+const distinctChampsSet12 = [14, 13, 13, 12, 8];
 
 const costProbs = [		  // level
   [1,    0,    0,    0,    0],    // 1
@@ -128,8 +143,8 @@ function getCostProb(lvl, cost){ // 1-indexed
 // a: Number of copies of this unit already out
 // b: Number of units of the same cost already out
 // gold: Amount of gold you want to roll
-function getProbs(cost, lvl, a, b, gold) {
-  var mat = getTransitionMatrix(cost, lvl, a, b);
+function getProbs(cost, lvl, a, b, gold, set) {
+  var mat = getTransitionMatrix(cost, lvl, a, b, set);
   mat = power(mat, 5*Math.floor(gold/2));
 
   // Probabilities for exactly 0, 1, 2, ..., 9 of desired unit
@@ -148,7 +163,7 @@ function getProbs(cost, lvl, a, b, gold) {
   return [pprob, cprob];
 }
 
-function getTransitionMatrix(cost, lvl, a, b){
+function getTransitionMatrix(cost, lvl, a, b, set){
   const mat = [];
   for (let i = 0; i < 10; i++) {
     const newRow = [];
@@ -157,7 +172,7 @@ function getTransitionMatrix(cost, lvl, a, b){
       	newRow.push(1); // from X >= 9 to X >= 9, probability is 1
       	continue;
       }
-      const p = getTransitionProb(cost, lvl, a + i, b + i);
+      const p = getTransitionProb(cost, lvl, a + i, b + i, set);
       if (j == i) {
         newRow.push(1 - p);
       } else if (j == i + 1) {
@@ -172,7 +187,9 @@ function getTransitionMatrix(cost, lvl, a, b){
 }
 
 // Probability of rolling the desired unit in one shop given this state
-function getTransitionProb(cost, lvl, a, b){
+function getTransitionProb(cost, lvl, a, b, set){
+  const totalUnits = set === 12 ? totalUnitsSet12 : totalUnitsSet11;
+  const distinctChamps = set === 12 ? distinctChampsSet12 : distinctChampsSet11;
   const howManyLeft = Math.max(0, totalUnits[cost - 1] - a);
   const poolSize = totalUnits[cost - 1] * distinctChamps[cost - 1] - b;
   return getCostProb(lvl, cost) * (howManyLeft / poolSize)

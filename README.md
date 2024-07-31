@@ -3,6 +3,8 @@ A calculator that provides the odds of hitting your units in TFT, made with very
 
 Visit [here](https://wongkj12.github.io/TFT-Rolling-Odds-Calculator/).
 
+**Update as of 31/7/24:** Set 12 bag sizes and shop odds. 30/25/18/10/9 for each cost, 14/13/13/12/8 distinct champions for each cost. Also included toggle for comparison between sets.
+
 **Update as of 29/5/24:** Set 11 bag sizes and shop odds. 22/20/17/10/9 for each cost, 13/13/13/12/8 distinct champions for each cost. Updated level 7/8 cost probabilities
 
 **Update as of 26/11/23:** Set 10 bag sizes and shop odds. 22/20/17/10/9 for each cost, 13/13/13/13/8 distinct champions for each cost

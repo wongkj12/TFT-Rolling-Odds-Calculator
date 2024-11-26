@@ -2,6 +2,7 @@
 A calculator that provides the odds of hitting your units in TFT, made with very simple HTML and Chart.js
 
 Visit [here](https://wongkj12.github.io/TFT-Rolling-Odds-Calculator/).
+**Update as of 26/11/24:** Updated for set 13, added functionality to compare odds of rolling at the next level
 
 **Update as of 31/7/24:** Set 12 bag sizes and shop odds. 30/25/18/10/9 for each cost, 14/13/13/12/8 distinct champions for each cost. Also included toggle for comparison between sets.
 

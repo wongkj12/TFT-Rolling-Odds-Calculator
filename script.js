@@ -1,5 +1,5 @@
 document.getElementById("setRange").onchange = function () {
-//   updateSet();
+  //   updateSet();
   updateGraph();
 };
 
@@ -54,13 +54,10 @@ function updateGoldToNextLvl() {
 }
 
 function updateXPToNextLvl() {
-	var val = document.getElementById("xpToNextLvlText").value;
-	document.getElementById("xpToNextLvlOutput").innerHTML = val;
-	updateGraph();
-  }
-
-
-
+  var val = document.getElementById("xpToNextLvlText").value;
+  document.getElementById("xpToNextLvlOutput").innerHTML = val;
+  updateGraph();
+}
 
 // Default graph
 
@@ -83,11 +80,11 @@ var chart = new Chart(ctx, {
         suggestedMin: 0,
         suggestedMax: 1,
         beginAtZero: true,
-		ticks: {
-			format: {
-				style: 'percent'
-			}
-		}
+        ticks: {
+          format: {
+            style: "percent",
+          },
+        },
       },
     },
 
@@ -107,8 +104,8 @@ var chart = new Chart(ctx, {
             if (tooltipItem.dataset.data[tooltipItem.dataIndex] != null)
               tooltipText =
                 tooltipItem.dataset.data[tooltipItem.dataIndex].toString();
-				let percentage = (tooltipText * 100).toFixed(2) + '%';
-                
+            let percentage = (tooltipText * 100).toFixed(2) + "%";
+
             return percentage;
           },
         },
@@ -118,13 +115,13 @@ var chart = new Chart(ctx, {
 });
 
 function updateGraph() {
-	var set = document.getElementById("setRange").value;
-	var cost = parseInt(document.getElementById("costRange").value);
-	var lvl = parseInt(document.getElementById("lvlRange").value);
-	var copies = parseInt(document.getElementById("copiesText").value);
-	var pool = parseInt(document.getElementById("poolText").value);
-	var gold = parseInt(document.getElementById("goldText").value);
-	var xpToNextLvl = parseInt(document.getElementById("xpToNextLvlText").value);
+  var set = document.getElementById("setRange").value;
+  var cost = parseInt(document.getElementById("costRange").value);
+  var lvl = parseInt(document.getElementById("lvlRange").value);
+  var copies = parseInt(document.getElementById("copiesText").value);
+  var pool = parseInt(document.getElementById("poolText").value);
+  var gold = parseInt(document.getElementById("goldText").value);
+  var xpToNextLvl = parseInt(document.getElementById("xpToNextLvlText").value);
   const levelOutputData = getProbs(
     cost,
     lvl,
@@ -133,8 +130,8 @@ function updateGraph() {
     gold,
     set //to change to text for 13b
   )[1].slice(1);
-  let xpReq = xpToNextLvl
-let goldToNextLvl = 4.0 * Math.ceil(xpReq/4.0)
+  let xpReq = xpToNextLvl;
+  let goldToNextLvl = 4.0 * Math.ceil(xpReq / 4.0);
 
   if (gold - goldToNextLvl > 0 && goldToNextLvl) {
     const lvlPlusOneGold = gold - goldToNextLvl;
@@ -142,7 +139,7 @@ let goldToNextLvl = 4.0 * Math.ceil(xpReq/4.0)
     chart.data.datasets = [
       {
         label: "Probability of getting at least x units - lvl " + lvl,
-        data: levelOutputData
+        data: levelOutputData,
       },
       {
         label: "Probability of getting at least x units - lvl " + lvlPlusOneLvl,
@@ -160,7 +157,7 @@ let goldToNextLvl = 4.0 * Math.ceil(xpReq/4.0)
     chart.data.datasets = [
       {
         label: "Probability of getting at least x units" + " lvl " + lvl,
-        data: levelOutputData //to change to text for 13b
+        data: levelOutputData, //to change to text for 13b
       },
     ];
   }
@@ -170,7 +167,7 @@ let goldToNextLvl = 4.0 * Math.ceil(xpReq/4.0)
 // CALCULATIONS
 
 const setAttributes = {
-  "11": {
+  11: {
     totalUnits: [22, 20, 17, 10, 9],
     distinctChamps: [13, 13, 13, 12, 8],
     costProbs: [
@@ -188,7 +185,7 @@ const setAttributes = {
       [0.01, 0.02, 0.12, 0.5, 0.35], // 11
     ],
   },
-  "12": {
+  12: {
     totalUnits: [30, 25, 18, 10, 9],
     distinctChamps: [14, 13, 13, 12, 8],
     costProbs: [
@@ -201,12 +198,12 @@ const setAttributes = {
       [0.3, 0.4, 0.25, 0.05, 0], // 6
       [0.19, 0.3, 0.4, 0.1, 0.01], // 7
       [0.18, 0.25, 0.32, 0.22, 0.03], // 8
-      [0.15, 0.2, 0.25, 0.30, 0.1], // 9
+      [0.15, 0.2, 0.25, 0.3, 0.1], // 9
       [0.05, 0.1, 0.2, 0.4, 0.25], // 10
       [0.01, 0.02, 0.12, 0.5, 0.35], // 11
     ],
   },
-  "13": {
+  13: {
     totalUnits: [30, 25, 18, 10, 9],
     distinctChamps: [14, 13, 13, 12, 8],
     costProbs: [
@@ -219,7 +216,7 @@ const setAttributes = {
       [0.3, 0.4, 0.25, 0.05, 0], // 6
       [0.19, 0.3, 0.4, 0.1, 0.01], // 7
       [0.18, 0.25, 0.32, 0.22, 0.03], // 8
-      [0.15, 0.2, 0.25, 0.30, 0.1], // 9
+      [0.15, 0.2, 0.25, 0.3, 0.1], // 9
       [0.05, 0.1, 0.2, 0.4, 0.25], // 10
       [0.01, 0.02, 0.12, 0.5, 0.35], // 11
     ],

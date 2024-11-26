@@ -133,7 +133,7 @@ function updateGraph() {
   let xpReq = xpToNextLvl;
   let goldToNextLvl = 4.0 * Math.ceil(xpReq / 4.0);
 
-  if (gold - goldToNextLvl > 0 && goldToNextLvl) {
+  if (gold - goldToNextLvl > 0 && goldToNextLvl && lvl < 11) {
     const lvlPlusOneGold = gold - goldToNextLvl;
     lvlPlusOneLvl = lvl + 1;
     chart.data.datasets = [

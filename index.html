@@ -17,7 +17,7 @@
     <div style="display:inline-block;">
         <h2> TFT Rolling Odds Calculator</h2>
     </div>
-    <hr/>
+    <hr />
     <br>
     <main class="container">
         <div>
@@ -40,7 +40,7 @@
                     cost. Updated level 7/8 cost probabilities.
             </ul>
         </section>
-        <hr/>
+        <hr />
         <section>
             <div class="inputItem">
                 <label>Current set:</label>
@@ -54,39 +54,39 @@
 
             <div class="inputContainer">
 
-                <div class="inputItem">
+                <div class="inputItem form-group">
                     <label>Desired unit cost:</label>
                     <output id="costOutput">1</output>
-                    <input type="range" min="1" max="5" value="1" class="slider" id="costRange"></input>
+                    <input type="range" min="1" max="5" value="1" class="slider form-range" id="costRange"></input>
                 </div>
-                <div class="inputItem">
+                <div class="inputItem form-group">
                     <label> Current Level:</label>
                     <output id="lvlOutput">1</output>
-                    <input type="range" min="1" max="11" value="1" class="slider" id="lvlRange"></input>
+                    <input type="range" min="1" max="11" value="1" class="slider form-range" id="lvlRange"></input>
                 </div>
-                <div class="inputItem">
+                <div class="inputItem form-group">
                     <label> Number of copies of this unit already out:</label>
                     <input class="form-control" type="number" id="copiesText" value="0" min="0"
                         style="height:30px; font-size:18px;"></input>
                 </div>
-                <div class="inputItem">
+                <div class="inputItem form-group">
                     <label> Number of units of the same cost already out:</label>
                     <input class="form-control" type="number" id="poolText" value="0" min="0"
                         style="height:30px; font-size:18px;"></input>
                 </div>
-                <div class="inputItem">
+                <div class="inputItem form-group">
                     <label> Amount of gold you want to roll down:</label>
-                    <input class="form-control" type="number" id="goldText" value="30" min="0"
-                        style="height:30px; font-size:18px;"></input>
+                    <input class="form-control" type="number" id="goldText" value="" min="0"
+                        style="height:30px; font-size:18px;" step="2" placeholder="Exclude gold spent on units"></input>
                 </div>
-                <div class="inputItem">
+                <div class="inputItem form-group">
                     <label> XP until next level</label>
-                    <input class="form-control" type="number" id="xpToNextLvlText" min="0" value=""
+                    <input class="form-control" type="number" id="xpToNextLvlText" step="2" min="0" value=""
                         style="height:30px; font-size:18px;"></input>
                 </div>
             </div>
         </section>
-        <hr/>
+        <hr />
         <div class="chart-container" style="position: relative; height:60vh; width:80vw">
             <canvas id="myChart"></canvas>
         </div>

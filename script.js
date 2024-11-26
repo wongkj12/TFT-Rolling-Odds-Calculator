@@ -237,6 +237,7 @@ function getCostProb(lvl, cost, set) {
 // b: Number of units of the same cost already out
 // gold: Amount of gold you want to roll
 function getProbs(cost, lvl, a, b, gold, set) {
+  if (gold == 0) return Array(2).fill(Array(10).fill(0));
   var mat = getTransitionMatrix(cost, lvl, a, b, set);
   mat = power(mat, 5 * Math.floor(gold / 2));
 

@@ -1,140 +1,233 @@
-document.getElementById("setRange").oninput = function(){
-	updateSet();
-	updateGraph();
+document.getElementById("setRange").onchange = function () {
+  //   updateSet();
+  updateGraph();
+};
+
+document.getElementById("costRange").oninput = function () {
+  updateCost();
+  updateGraph();
+};
+
+document.getElementById("lvlRange").oninput = function () {
+  updateLvl();
+  updateGraph();
+};
+
+document.getElementById("copiesText").oninput = function () {
+  updateGraph();
+};
+
+document.getElementById("poolText").oninput = function () {
+  updateGraph();
+};
+
+document.getElementById("goldText").oninput = function () {
+  updateGraph();
+};
+
+document.getElementById("xpToNextLvlText").oninput = function () {
+  updateGraph();
+};
+
+// function updateSet() {
+//   var val = document.getElementById("setRange").value;
+//   document.getElementById("setOutput").innerHTML = val;
+//   updateGraph();
+// }
+
+function updateCost() {
+  var val = document.getElementById("costRange").value;
+  document.getElementById("costOutput").innerHTML = val;
+  updateGraph();
 }
 
-document.getElementById("costRange").oninput = function(){
-	updateCost();
-	updateGraph();
-}
-		
-document.getElementById("lvlRange").oninput = function(){
-	updateLvl();
-	updateGraph();
+function updateLvl() {
+  var val = document.getElementById("lvlRange").value;
+  document.getElementById("lvlOutput").innerHTML = val;
+  updateGraph();
 }
 
-document.getElementById("copiesText").oninput = function(){
-	updateGraph();
+function updateGoldToNextLvl() {
+  var val = document.getElementById("goldToNextLvlText").value;
+  document.getElementById("goldToNextLvlOutput").innerHTML = val;
+  updateGraph();
 }
 
-document.getElementById("poolText").oninput = function(){
-	updateGraph();
+function updateXPToNextLvl() {
+  var val = document.getElementById("xpToNextLvlText").value;
+  document.getElementById("xpToNextLvlOutput").innerHTML = val;
+  updateGraph();
 }
-
-document.getElementById("goldText").oninput = function(){
-	updateGraph();
-}
-
-function updateSet(){
-	var val = document.getElementById("setRange").value
-	document.getElementById("setOutput").innerHTML = val
-	updateGraph();
-}
-
-function updateCost(){
-	var val = document.getElementById("costRange").value
-	document.getElementById("costOutput").innerHTML = val
-	updateGraph();
-}
-
-function updateLvl(){
-	var val = document.getElementById("lvlRange").value
-	document.getElementById("lvlOutput").innerHTML = val
-	updateGraph();
-}
-
-var set = document.getElementById("setRange")
-var cost = document.getElementById("costRange")
-var lvl = document.getElementById("lvlRange")
-var copies = document.getElementById("copiesText")
-var pool = document.getElementById("poolText")
-var gold = document.getElementById("goldText")
 
 // Default graph
 
-var ctx = document.getElementById("myChart")
-
+var ctx = document.getElementById("myChart");
 
 var chart = new Chart(ctx, {
-					type: 'bar',
-					data: {
-						labels: ['1','2','3','4','5','6','7','8','9'],
-						datasets: [{
-							label: 'Probability of getting at least x units',
-							data: [0, 0, 0, 0, 0, 0, 0, 0, 0]
-						}]
-					},
-					options: {
-						scales: {
-							y: {
-								suggestedMin: 0,
-								suggestedMax: 1,
-								beginAtZero: true
-							}
-						},
+  type: "bar",
+  data: {
+    labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+    datasets: [
+      {
+        label: "Probability of getting at least x units",
+        data: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      },
+    ],
+  },
+  options: {
+    scales: {
+      y: {
+        suggestedMin: 0,
+        suggestedMax: 1,
+        beginAtZero: true,
+        ticks: {
+          format: {
+            style: "percent",
+          },
+        },
+      },
+    },
 
-						plugins: {
-							tooltip: {
-								displayColors: false,
-								bodyFont: {
-									size: 20
-								},
-								callbacks: {
+    plugins: {
+      tooltip: {
+        displayColors: false,
+        bodyFont: {
+          size: 20,
+        },
+        callbacks: {
+          title: function (tooltipItem) {
+            return "";
+          },
 
-									title: function(tooltipItem) {
-										return '';
-									},
+          label: function (tooltipItem) {
+            var tooltipText = "";
+            if (tooltipItem.dataset.data[tooltipItem.dataIndex] != null)
+              tooltipText =
+                tooltipItem.dataset.data[tooltipItem.dataIndex].toString();
+            let percentage = (tooltipText * 100).toFixed(2) + "%";
 
-									label: function (tooltipItem) {
-										var tooltipText = '';
-							            if (tooltipItem.dataset.data[tooltipItem.dataIndex] != null)
-							              tooltipText = tooltipItem.dataset.data[tooltipItem.dataIndex].toString();
-							            return tooltipText;
-									}
-								}
-							}
-
-						}
-					}
-				});
+            return percentage;
+          },
+        },
+      },
+    },
+  },
+});
 
 function updateGraph() {
-	chart.data.datasets = [{
-							label: 'Probability of getting at least x units',
-							data: getProbs(
-									parseInt(cost.value),
-									parseInt(lvl.value),
-									parseInt(copies.value),
-									parseInt(pool.value),
-									parseInt(gold.value),
-									parseInt(set.value))[1].slice(1)
-						}]
-	chart.update();
+  var set = document.getElementById("setRange").value;
+  var cost = parseInt(document.getElementById("costRange").value);
+  var lvl = parseInt(document.getElementById("lvlRange").value);
+  var copies = parseInt(document.getElementById("copiesText").value);
+  var pool = parseInt(document.getElementById("poolText").value);
+  var gold = parseInt(document.getElementById("goldText").value);
+  var xpToNextLvl = parseInt(document.getElementById("xpToNextLvlText").value);
+  const levelOutputData = getProbs(
+    cost,
+    lvl,
+    copies,
+    pool,
+    gold,
+    set //to change to text for 13b
+  )[1].slice(1);
+  let xpReq = xpToNextLvl;
+  let goldToNextLvl = 4.0 * Math.ceil(xpReq / 4.0);
+
+  if (gold - goldToNextLvl > 0 && goldToNextLvl && lvl < 11) {
+    const lvlPlusOneGold = gold - goldToNextLvl;
+    lvlPlusOneLvl = lvl + 1;
+    chart.data.datasets = [
+      {
+        label: "Probability of getting at least x units - lvl " + lvl,
+        data: levelOutputData,
+      },
+      {
+        label: "Probability of getting at least x units - lvl " + lvlPlusOneLvl,
+        data: getProbs(
+          cost,
+          lvlPlusOneLvl,
+          copies,
+          pool,
+          lvlPlusOneGold,
+          set //to change to text for 13b
+        )[1].slice(1),
+      },
+    ];
+  } else {
+    chart.data.datasets = [
+      {
+        label: "Probability of getting at least x units" + " lvl " + lvl,
+        data: levelOutputData, //to change to text for 13b
+      },
+    ];
+  }
+  chart.update("none");
 }
 
 // CALCULATIONS
 
-const totalUnitsSet11 = [22, 20, 17, 10, 9]; // Set 11 data kept for comparison purposes
-const totalUnitsSet12 = [30, 25, 18, 10, 9];
-const distinctChampsSet11 = [13, 13, 13, 12, 8];
-const distinctChampsSet12 = [14, 13, 13, 12, 8];
+const setAttributes = {
+  11: {
+    totalUnits: [22, 20, 17, 10, 9],
+    distinctChamps: [13, 13, 13, 12, 8],
+    costProbs: [
+      // level
+      [1, 0, 0, 0, 0], // 1
+      [1, 0, 0, 0, 0], // 2
+      [0.75, 0.25, 0, 0, 0], // 3
+      [0.55, 0.3, 0.15, 0, 0], // 4
+      [0.45, 0.33, 0.2, 0.02, 0], // 5
+      [0.3, 0.4, 0.25, 0.05, 0], // 6
+      [0.19, 0.3, 0.4, 0.1, 0.01], // 7
+      [0.18, 0.25, 0.32, 0.22, 0.03], // 8
+      [0.1, 0.2, 0.25, 0.35, 0.1], // 9
+      [0.05, 0.1, 0.2, 0.4, 0.25], // 10
+      [0.01, 0.02, 0.12, 0.5, 0.35], // 11
+    ],
+  },
+  12: {
+    totalUnits: [30, 25, 18, 10, 9],
+    distinctChamps: [14, 13, 13, 12, 8],
+    costProbs: [
+      // level
+      [1, 0, 0, 0, 0], // 1
+      [1, 0, 0, 0, 0], // 2
+      [0.75, 0.25, 0, 0, 0], // 3
+      [0.55, 0.3, 0.15, 0, 0], // 4
+      [0.45, 0.33, 0.2, 0.02, 0], // 5
+      [0.3, 0.4, 0.25, 0.05, 0], // 6
+      [0.19, 0.3, 0.4, 0.1, 0.01], // 7
+      [0.18, 0.25, 0.32, 0.22, 0.03], // 8
+      [0.15, 0.2, 0.25, 0.3, 0.1], // 9
+      [0.05, 0.1, 0.2, 0.4, 0.25], // 10
+      [0.01, 0.02, 0.12, 0.5, 0.35], // 11
+    ],
+  },
+  13: {
+    totalUnits: [30, 25, 18, 10, 9],
+    distinctChamps: [14, 13, 13, 12, 8],
+    costProbs: [
+      // level
+      [1, 0, 0, 0, 0], // 1
+      [1, 0, 0, 0, 0], // 2
+      [0.75, 0.25, 0, 0, 0], // 3
+      [0.55, 0.3, 0.15, 0, 0], // 4
+      [0.45, 0.33, 0.2, 0.02, 0], // 5
+      [0.3, 0.4, 0.25, 0.05, 0], // 6
+      [0.19, 0.3, 0.4, 0.1, 0.01], // 7
+      [0.18, 0.25, 0.32, 0.22, 0.03], // 8
+      [0.15, 0.2, 0.25, 0.3, 0.1], // 9
+      [0.05, 0.1, 0.2, 0.4, 0.25], // 10
+      [0.01, 0.02, 0.12, 0.5, 0.35], // 11
+    ],
+  },
+};
 
-const costProbs = [		  // level
-  [1,    0,    0,    0,    0],    // 1
-  [1,    0,    0,    0,    0],    // 2
-  [0.75, 0.25, 0,    0,    0],    // 3
-  [0.55, 0.30, 0.15, 0,    0],    // 4
-  [0.45, 0.33, 0.20, 0.02, 0],    // 5
-  [0.30, 0.40, 0.25, 0.05, 0],    // 6
-  [0.19, 0.30, 0.40, 0.10, 0.01], // 7
-  [0.18, 0.25, 0.32, 0.22, 0.03], // 8
-  [0.10, 0.20, 0.25, 0.35, 0.10], // 9
-  [0.05, 0.10, 0.20, 0.40, 0.25], // 10
-  [0.01, 0.02, 0.12, 0.50, 0.35]  // 11
-];
+const expReq = [0, 0, 2, 6, 10, 20, 36, 48, 72, 84]; // https://leagueoflegends.fandom.com/wiki/Experience_(Teamfight_Tactics)
 
-function getCostProb(lvl, cost){ // 1-indexed
-  return costProbs[lvl - 1][cost - 1];
+function getCostProb(lvl, cost, set) {
+  // 1-indexed
+  return setAttributes[set]["costProbs"][lvl - 1][cost - 1];
 }
 
 // Returns cumulative probability of getting 0-9 copies
@@ -144,11 +237,12 @@ function getCostProb(lvl, cost){ // 1-indexed
 // b: Number of units of the same cost already out
 // gold: Amount of gold you want to roll
 function getProbs(cost, lvl, a, b, gold, set) {
+  if (gold == 0) return Array(2).fill(Array(10).fill(0));
   var mat = getTransitionMatrix(cost, lvl, a, b, set);
-  mat = power(mat, 5*Math.floor(gold/2));
+  mat = power(mat, 5 * Math.floor(gold / 2));
 
   // Probabilities for exactly 0, 1, 2, ..., 9 of desired unit
-  const pprob = mat[0] 
+  const pprob = mat[0];
 
   // Cumulative probabilities for at least 0, 1, 2, ..., 9 of desired unit
   let cprob = [1];
@@ -163,14 +257,14 @@ function getProbs(cost, lvl, a, b, gold, set) {
   return [pprob, cprob];
 }
 
-function getTransitionMatrix(cost, lvl, a, b, set){
+function getTransitionMatrix(cost, lvl, a, b, set) {
   const mat = [];
   for (let i = 0; i < 10; i++) {
     const newRow = [];
     for (let j = 0; j < 10; j++) {
       if (i == 9 && j == 9) {
-      	newRow.push(1); // from X >= 9 to X >= 9, probability is 1
-      	continue;
+        newRow.push(1); // from X >= 9 to X >= 9, probability is 1
+        continue;
       }
       const p = getTransitionProb(cost, lvl, a + i, b + i, set);
       if (j == i) {
@@ -187,36 +281,39 @@ function getTransitionMatrix(cost, lvl, a, b, set){
 }
 
 // Probability of rolling the desired unit in one shop given this state
-function getTransitionProb(cost, lvl, a, b, set){
-  const totalUnits = set === 12 ? totalUnitsSet12 : totalUnitsSet11;
-  const distinctChamps = set === 12 ? distinctChampsSet12 : distinctChampsSet11;
+function getTransitionProb(cost, lvl, a, b, set) {
+  //   const totalUnits = set === 12 ? totalUnitsSet12 : totalUnitsSet11;
+  const totalUnits = setAttributes[set]["totalUnits"];
+  const distinctChamps = setAttributes[set]["distinctChamps"];
   const howManyLeft = Math.max(0, totalUnits[cost - 1] - a);
   const poolSize = totalUnits[cost - 1] * distinctChamps[cost - 1] - b;
-  return getCostProb(lvl, cost) * (howManyLeft / poolSize)
+  return getCostProb(lvl, cost, set) * (howManyLeft / poolSize);
 }
 
 //Matrix multiplication rounded to 3 d.p.
-function multiply(a, b){
-  var aNumRows = a.length, aNumCols = a[0].length,
-      bNumRows = b.length, bNumCols = b[0].length,
-      m = new Array(aNumRows);  // initialize array of rows
+function multiply(a, b) {
+  var aNumRows = a.length,
+    aNumCols = a[0].length,
+    bNumRows = b.length,
+    bNumCols = b[0].length,
+    m = new Array(aNumRows); // initialize array of rows
   for (var r = 0; r < aNumRows; ++r) {
     m[r] = new Array(bNumCols); // initialize the current row
     for (var c = 0; c < bNumCols; ++c) {
-      m[r][c] = 0;             // initialize the current cell
+      m[r][c] = 0; // initialize the current cell
       for (var i = 0; i < aNumCols; ++i) {
         m[r][c] += a[r][i] * b[i][c];
       }
-      m[r][c] = m[r][c]
+      m[r][c] = m[r][c];
     }
   }
   return m;
 }
 
-function power(a, n){
-	var newmat = a
-	for (let i = 0; i < n-1; i++) {
-		newmat = multiply(newmat, a);
-	}
-	return newmat;
+function power(a, n) {
+  var newmat = a;
+  for (let i = 0; i < n - 1; i++) {
+    newmat = multiply(newmat, a);
+  }
+  return newmat;
 }

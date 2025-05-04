@@ -39,6 +39,7 @@ function updateCost() {
   var val = document.getElementById("costRange").value;
   document.getElementById("costOutput").innerHTML = val;
   updateGraph();
+  updateMaxInputValues();
 }
 
 function updateLvl() {
@@ -57,6 +58,41 @@ function updateXPToNextLvl() {
   var val = document.getElementById("xpToNextLvlText").value;
   document.getElementById("xpToNextLvlOutput").innerHTML = val;
   updateGraph();
+}
+
+const unitPool = new Map();
+
+unitPool.set(1, 30);
+unitPool.set(2, 25);
+unitPool.set(3, 18);
+unitPool.set(4, 10);
+unitPool.set(5, 9);
+
+function updateMaxInputValues() {
+  var val = parseInt(document.getElementById("costOutput").innerHTML);
+  var result = 30;
+  switch (val) {
+    case 1:
+      result = unitPool.get(1);
+      break;
+    case 2:
+      result = unitPool.get(2);
+      break;
+    case 3:
+      result = unitPool.get(3);
+      break;
+    case 4:
+      result = unitPool.get(4);
+      break;
+    case 5:
+      result = unitPool.get(5);
+      break;
+  }
+  var element = document.getElementById("copiesText");
+  element.max = result;
+  if (element.value > result) {
+    element.value = result;
+  }
 }
 
 // Default graph

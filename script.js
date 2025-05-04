@@ -246,25 +246,7 @@ function updateMaxInputValues() {
   var val = parseInt(document.getElementById("costOutput").innerHTML);
   var set = document.getElementById("setRange").value;
   const poolSize = setAttributes[set]["totalUnits"];
-
-  var result = 30;
-  switch (val) {
-    case 1:
-      result = poolSize[0];
-      break;
-    case 2:
-      result = poolSize[1];
-      break;
-    case 3:
-      result = poolSize[2];
-      break;
-    case 4:
-      result = poolSize[3];
-      break;
-    case 5:
-      result = poolSize[4];
-      break;
-  }
+  var result = poolSize[val - 1];
 
   var copiesTextElement = document.getElementById("copiesText");
   copiesTextElement.max = result;

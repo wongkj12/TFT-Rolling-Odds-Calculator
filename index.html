@@ -23,6 +23,9 @@
         <section id="changelog">
             <ul>
                 <li>
+                    <strong>[Update as of 04/5/25]</strong>: Updated for set 14, added unit pool size information
+                </li>
+                <li>
                     <strong>[Update as of 26/11/24]</strong>: Updated for set 13, added functionality to compare odds of rolling at the next level
                 </li>
                 <li>
@@ -43,6 +46,7 @@
                 <label>Current set:</label>
                 <select class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
                     aria-expanded="false" name="currentSet" id="setRange">
+                    <option value="14">Set 14</option>
                     <option value="13">Set 13</option>
                     <option value="12">Set 12</option>
                     <option value="11">Set 11</option>
@@ -54,6 +58,7 @@
                 <div class="inputItem form-group">
                     <label>Desired unit cost:</label>
                     <output id="costOutput">1</output>
+                    - Maximum pool size for selected unit cost: <strong><span id="maxPoolSize">30</span></strong>
                     <input type="range" min="1" max="5" value="1" class="slider form-range" id="costRange"></input>
                 </div>
                 <div class="inputItem form-group">
@@ -63,7 +68,7 @@
                 </div>
                 <div class="inputItem form-group">
                     <label> Number of copies of this unit already out:</label>
-                    <input class="form-control" type="number" id="copiesText" value="0" min="0"
+                    <input class="form-control" type="number" id="copiesText" value="0" min="0" max="30"
                         style="height:30px; font-size:18px;"></input>
                 </div>
                 <div class="inputItem form-group">

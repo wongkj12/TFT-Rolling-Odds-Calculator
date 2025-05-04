@@ -60,41 +60,6 @@ function updateXPToNextLvl() {
   updateGraph();
 }
 
-const unitPool = new Map();
-
-unitPool.set(1, 30);
-unitPool.set(2, 25);
-unitPool.set(3, 18);
-unitPool.set(4, 10);
-unitPool.set(5, 9);
-
-function updateMaxInputValues() {
-  var val = parseInt(document.getElementById("costOutput").innerHTML);
-  var result = 30;
-  switch (val) {
-    case 1:
-      result = unitPool.get(1);
-      break;
-    case 2:
-      result = unitPool.get(2);
-      break;
-    case 3:
-      result = unitPool.get(3);
-      break;
-    case 4:
-      result = unitPool.get(4);
-      break;
-    case 5:
-      result = unitPool.get(5);
-      break;
-  }
-  var element = document.getElementById("copiesText");
-  element.max = result;
-  if (element.value > result) {
-    element.value = result;
-  }
-}
-
 // Default graph
 
 var ctx = document.getElementById("myChart");
@@ -257,7 +222,59 @@ const setAttributes = {
       [0.01, 0.02, 0.12, 0.5, 0.35], // 11
     ],
   },
+  14: {
+    totalUnits: [30, 25, 18, 10, 9],
+    distinctChamps: [13, 13, 13, 13, 8],
+    costProbs: [
+      // level
+      [1, 0, 0, 0, 0], // 1
+      [1, 0, 0, 0, 0], // 2
+      [0.75, 0.25, 0, 0, 0], // 3
+      [0.55, 0.3, 0.15, 0, 0], // 4
+      [0.45, 0.33, 0.2, 0.02, 0], // 5
+      [0.3, 0.4, 0.25, 0.05, 0], // 6
+      [0.19, 0.3, 0.4, 0.1, 0.01], // 7
+      [0.17, 0.24, 0.32, 0.24, 0.03], // 8
+      [0.15, 0.18, 0.25, 0.3, 0.12], // 9
+      [0.05, 0.1, 0.2, 0.4, 0.25], // 10
+      [0.01, 0.02, 0.12, 0.5, 0.35], // 11
+    ],
+  },
 };
+
+function updateMaxInputValues() {
+  var val = parseInt(document.getElementById("costOutput").innerHTML);
+  var set = document.getElementById("setRange").value;
+  const poolSize = setAttributes[set]["totalUnits"];
+
+  var result = 30;
+  switch (val) {
+    case 1:
+      result = poolSize[0];
+      break;
+    case 2:
+      result = poolSize[1];
+      break;
+    case 3:
+      result = poolSize[2];
+      break;
+    case 4:
+      result = poolSize[3];
+      break;
+    case 5:
+      result = poolSize[4];
+      break;
+  }
+
+  var copiesTextElement = document.getElementById("copiesText");
+  copiesTextElement.max = result;
+  if (copiesTextElement.value > result) {
+    copiesTextElement.value = result;
+  }
+
+  var maxPoolSizeElement = document.getElementById("maxPoolSize");
+  maxPoolSizeElement.innerHTML = result;
+}
 
 const expReq = [0, 0, 2, 6, 10, 20, 36, 48, 72, 84]; // https://leagueoflegends.fandom.com/wiki/Experience_(Teamfight_Tactics)
 

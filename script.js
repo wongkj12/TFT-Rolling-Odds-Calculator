@@ -39,6 +39,7 @@ function updateCost() {
   var val = document.getElementById("costRange").value;
   document.getElementById("costOutput").innerHTML = val;
   updateGraph();
+  updateMaxInputValues();
 }
 
 function updateLvl() {
@@ -221,7 +222,41 @@ const setAttributes = {
       [0.01, 0.02, 0.12, 0.5, 0.35], // 11
     ],
   },
+  14: {
+    totalUnits: [30, 25, 18, 10, 9],
+    distinctChamps: [13, 13, 13, 13, 8],
+    costProbs: [
+      // level
+      [1, 0, 0, 0, 0], // 1
+      [1, 0, 0, 0, 0], // 2
+      [0.75, 0.25, 0, 0, 0], // 3
+      [0.55, 0.3, 0.15, 0, 0], // 4
+      [0.45, 0.33, 0.2, 0.02, 0], // 5
+      [0.3, 0.4, 0.25, 0.05, 0], // 6
+      [0.19, 0.3, 0.4, 0.1, 0.01], // 7
+      [0.17, 0.24, 0.32, 0.24, 0.03], // 8
+      [0.15, 0.18, 0.25, 0.3, 0.12], // 9
+      [0.05, 0.1, 0.2, 0.4, 0.25], // 10
+      [0.01, 0.02, 0.12, 0.5, 0.35], // 11
+    ],
+  },
 };
+
+function updateMaxInputValues() {
+  var val = parseInt(document.getElementById("costOutput").innerHTML);
+  var set = document.getElementById("setRange").value;
+  const poolSize = setAttributes[set]["totalUnits"];
+  var result = poolSize[val - 1];
+
+  var copiesTextElement = document.getElementById("copiesText");
+  copiesTextElement.max = result;
+  if (copiesTextElement.value > result) {
+    copiesTextElement.value = result;
+  }
+
+  var maxPoolSizeElement = document.getElementById("maxPoolSize");
+  maxPoolSizeElement.innerHTML = result;
+}
 
 const expReq = [0, 0, 2, 6, 10, 20, 36, 48, 72, 84]; // https://leagueoflegends.fandom.com/wiki/Experience_(Teamfight_Tactics)
 

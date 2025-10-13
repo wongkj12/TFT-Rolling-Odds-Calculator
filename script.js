@@ -242,7 +242,7 @@ const setAttributes = {
   },
     15: {
     totalUnits: [30, 25, 18, 10, 9],
-    distinctChamps: [14, 13, 13, 13, 9],
+    distinctChamps: [14, 13, 13, 13, 8],
     costProbs: [
       // level
       [1, 0, 0, 0, 0], // 1

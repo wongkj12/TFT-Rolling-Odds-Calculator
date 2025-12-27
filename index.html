@@ -23,6 +23,14 @@
         <section id="changelog">
             <ul>
                 <li>
+                    <strong>[Update as of 26/12/25]</strong>: Updated for set 16. Due to the new unlock mechanic note that the actual probabilities can be much lower.
+                    <ul>
+                        <li>unlocked unit will appear in your pool. However not buying them lower their weights</li>
+                        <li>unlocked unit have a lower chance of appearing in your shop once you have 3 of them. This is negated once 4 player unlock that unit</li>
+                        <li>probabilities are still exact when rolling for an non unlockable x cost while not having unlock any x cost. Else, asume slightly lower (unlocked unit in pool) to drasticly lower (rolling for a 4/5 cost unlockable) odds</li>
+                    </ul>
+                </li>
+                <li>
                     <strong>[Update as of 13/8/25]</strong>: Updated for set 15
                 </li>
                 <li>
@@ -49,6 +57,7 @@
                 <label>Current set:</label>
                 <select class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
                     aria-expanded="false" name="currentSet" id="setRange">
+                    <option value="16">Set 16</option>
                     <option value="15">Set 15</option>
                     <option value="14">Set 14</option>
                     <option value="13">Set 13</option>
